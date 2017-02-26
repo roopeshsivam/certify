@@ -7,6 +7,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic.edit import FormView
 from django.forms import BaseModelFormSet
 from django.views.generic.edit import CreateView
+from django.views.decorators.http import condition
 
 
 
@@ -85,10 +86,18 @@ class DetailView(generic.DetailView):
 #         form.instance.created_by = self.request.user
 #         return super(CertificateView, self).form_valid(form)
 
+
 class CertificateView(CreateView):
-    model = CertCSS
-    fields = '__all__'
+    form_class = FormCertCSSC
     template_name = 'pages/certificate-form.html'
-    def form_valid(self, form):
-        form.instance.created_by = self.request.user
+
+    def dispatch(self, *args, **kwargs):
+        return super(CertificateView, self).dispatch(*args, **kwargs)
+
+    def form_valid(self, form, **kwargs):
+        kwargs = super(CertificateView, self).get_form_kwargs()
+        context = super(CertificateView, self).get_context_data(**kwargs)
+        ShipData = ShipMainData.objects.get(id=self.kwargs['ship_id'])
+        form.instance.DocAuthor = self.request.user
+        form.instance.ShipMainData = ShipData
         return super(CertificateView, self).form_valid(form)

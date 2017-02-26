@@ -19,6 +19,7 @@ class FormPlaceOfIssue(forms.ModelForm):
         fields = '__all__'
 
 ##Ship Data
+
 class FormShipOwner(forms.ModelForm):
     class Meta:
         model = ShipOwner
@@ -29,27 +30,31 @@ class FormShipMainData(forms.ModelForm):
         fields = '__all__'
 
 ##Ship Certificate
-class FormCertCSSRTC(forms.ModelForm):
+class FormCertBase(forms.ModelForm):
     class Meta:
-        model = CertCSSRTC
         fields = '__all__'
+        exclude = ('DocAuthor', 'IsActive', 'FieldName', 'ShipMainData',)
 
 class FormCertCSS(forms.ModelForm):
     class Meta:
         model = CertCSS
         fields = '__all__'
+
 class FormCertAFSC(forms.ModelForm):
     class Meta:
         model = CertAFSC
         fields = '__all__'
+
 class FormCertCHMC(forms.ModelForm):
     class Meta:
         model = CertCHMC
         fields = '__all__'
-class FormCertCSSC(forms.ModelForm):
-    class Meta:
+
+class FormCertCSSC(FormCertBase):
+    class Meta(FormCertBase.Meta):
         model = CertCSSC
         fields = '__all__'
+
 class Form(forms.ModelForm):
     class Meta:
         model = ShipOwner

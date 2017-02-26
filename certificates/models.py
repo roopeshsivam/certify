@@ -44,7 +44,7 @@ class CertificateManage(AbstractData):
 	DateValidity = models.DateField()
 	class Meta:
 		abstract = True
-	def get_cert_url(self):
+	def get_absolute_url(self):
 		return "/certificates/%s/%s/%s/" %(self.ShipMainData.pk, self.FieldName, self.pk)
 	def active(self):
 		if self.IsActive == True:
@@ -66,15 +66,15 @@ class ShipOwner(AbstractData):
 
 class ShipMainData(AbstractData):
 	ShipType = (
-		('a', 'Passanger Ship'),
-		('b', 'Passanger high-speed craft'),
-		('c', 'Cargo high-speed craft'),
+		('a', 'Passenger Ship'),
+		('b', 'Passenger HighSpeed Craft'),
+		('c', 'Cargo HighSpeed Craft'),
 		('d', 'Bulk Carrier'),
 		('e', 'Oil Tanker'),
-		('e', 'Chemical Tanker'),
-		('e', 'Gas Carrier'),
-		('e', 'Mobile offshore drilling unit'),
-		('e', 'Other cargo ship')
+		('f', 'Chemical Tanker'),
+		('g', 'Gas Carrier'),
+		('h', 'Mobile Offshore Drilling Unit'),
+		('i', 'Other Cargo Ship')
 	)
 	Name = models.CharField(max_length=200)
 	IMONumber = models.PositiveIntegerField(unique=True, validators=[MaxValueValidator(9999999999), MinValueValidator(1)],)
@@ -95,13 +95,13 @@ class ShipMainData(AbstractData):
 	def __str__(self):
 		return self.Name
 	def get_absolute_url(self):
-		return "/certificates/%s/" %(self.pk)
+		return "/certificates/ships/%s/" %(self.pk)
 	def get_certificate(self):
 		return self._default_manager.filter(ShipMainData=self)
 
 #	START---------Radio Telehphony Certificate-----------------
 class CertCSSRTC(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "0001")
+	FieldName = models.CharField(max_length=5, default = "cssrt")
 	Row001_Req = models.BooleanField()
 	Row001_Ins = models.BooleanField()
 	Row002_Req = models.BooleanField()
@@ -116,7 +116,7 @@ class CertCSSRTC(CertificateManage):
 #
 #	START---------Cargo Ship Saftey Certificate-------------
 class CertCSS(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "002")
+	FieldName = models.CharField(max_length=5, default = "ctcss")
 	AuthorizedMiles = models.PositiveIntegerField(validators=[MaxValueValidator(999999), MinValueValidator(1)],)
 	#--
 	LifeSavings_Total = models.PositiveIntegerField(validators=[MaxValueValidator(9999), MinValueValidator(1)],)
@@ -137,7 +137,7 @@ class CertCSS(CertificateManage):
 #
 #	START---------Interim Anti-Fouling Certificate-------------
 class CertAFSC(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "003")
+	FieldName = models.CharField(max_length=5, default = "ctafs")
 	PreviousIssued = models.DateField()
 	AppliedConstruction = models.BooleanField()
 	#--
@@ -158,7 +158,7 @@ class CertAFSC(CertificateManage):
 #	---------Interim Anti-Fouling Certificate-------------END
 	
 class CertCHMC(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "004")
+	FieldName = models.CharField(max_length=5, default = "ctchm")
 	BuilderName = models.CharField(max_length=200)
 	BuilderPlace = models.CharField(max_length=200)
 	#--
@@ -169,7 +169,7 @@ class CertCHMC(CertificateManage):
 #
 #	START---------Interim CSSC Certificate-----------------
 class CertCSSC(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "005")
+	FieldName = models.CharField(max_length=5, default = "ccssc")
 	KeelLaidDate = models.DateField() #Also for CSSR
 	AlterationDate = models.DateField()
 	LastInspectionDate_001 = models.DateField()
@@ -180,7 +180,7 @@ class CertCSSC(CertificateManage):
 #
 # 	START---------Interim CSSE Certificate-----------------
 class CertCSSE(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "006")
+	FieldName = models.CharField(max_length=5, default = "ccsse")
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
 	class Meta:
@@ -192,7 +192,7 @@ class CertCSSE(CertificateManage):
 #
 #	START---------Interim CSSR Certificate-----------------
 class CertCSSR(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "007")
+	FieldName = models.CharField(max_length=5, default = "ccssr")
 	AreaA1 = models.BooleanField()
 	AreaA2 = models.BooleanField()
 	AreaA3 = models.BooleanField()
@@ -204,35 +204,35 @@ class CertCSSR(CertificateManage):
 #
 #	START----Interim DOC Certificate----------------END
 class CertDOC(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "008")
+	FieldName = models.CharField(max_length=5, default = "ctdoc")
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
 #	---------Interim DOC Certificate----------------END
 #
 #	START----IAPP Certificate----------------
 class CertIAPP(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "009")
+	FieldName = models.CharField(max_length=5, default = "ciapp")
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
 #	---------IAPP Certificate----------------END
 #
 #	START----IEE Certificate----------------
 class CertIEE(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "010")
+	FieldName = models.CharField(max_length=5, default = "cieee")
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
 #	---------IEE Certificate----------------END
 #
 #	START----IOPP Certificate----------------
 class CertIOPP(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "011")
+	FieldName = models.CharField(max_length=5, default = "ciopp")
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
 #	---------IOPP Certificate----------------END
 #
 #	START----ISPP Certificate----------------
 class CertISPP(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "012")
+	FieldName = models.CharField(max_length=5, default = "cispp")
 	SewagePlant = models.CharField(max_length=200)
 	SewagePlantManufacture = models.CharField(max_length=200)
 	ComminuterType = models.CharField(max_length=200) 
@@ -245,7 +245,7 @@ class CertISPP(CertificateManage):
 #
 #	START----ISSC Certificate----------------END--------
 class CertISSC(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "013")
+	FieldName = models.CharField(max_length=5, default = "cissc")
 	YesNo = (
 		('a', 'Yes'),
 		('b', 'No')
@@ -256,7 +256,7 @@ class CertISSC(CertificateManage):
 		return str(self.ShipMainData.IMONumber)
 
 class CertLL(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "014")
+	FieldName = models.CharField(max_length=5, default = "cssll")
 	FreeBoard = (
 		('a', 'A New Ship'),
 		('b', 'An Existing Ship')
@@ -292,32 +292,32 @@ class CertLL(CertificateManage):
 		return str(self.ShipMainData.IMONumber)
 
 class CertIMLC(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "015")
+	FieldName = models.CharField(max_length=5, default = "cimlc")
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
 
 class CertSMC(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "016")
+	FieldName = models.CharField(max_length=5, default = "cssmc")
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
 
 class CertSOPEP(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "017")
+	FieldName = models.CharField(max_length=5, default = "sopep")
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
 
 class CertSSP(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "018")
+	FieldName = models.CharField(max_length=5, default = "ctssp")
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
 
 class CertSBA(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "019")
+	FieldName = models.CharField(max_length=5, default = "ctsba")
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
 
 class CertDG(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "020")
+	FieldName = models.CharField(max_length=5, default = "crtdg")
 	Manufacturer = models.CharField(max_length=200)
 	Model = models.CharField(max_length=200)
 	#--
@@ -325,7 +325,7 @@ class CertDG(CertificateManage):
 		return str(self.ShipMainData.IMONumber)
 
 class CertDH(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "021")
+	FieldName = models.CharField(max_length=5, default = "crtdh")
 	Manufacturer = models.CharField(max_length=200)
 	Model = models.CharField(max_length=200)
 	#--
@@ -333,12 +333,12 @@ class CertDH(CertificateManage):
 		return str(self.ShipMainData.IMONumber)
 
 class CertFC(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "022")
+	FieldName = models.CharField(max_length=5, default = "crtfc")
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
 
 class RecordAFSC(CertificateManage):
-	FieldName = models.CharField(max_length=200, default = "023")
+	FieldName = models.CharField(max_length=5, default = "ctafsc")
 	AppliedUsed = models.CharField(max_length=300)
 	AppliedDate = models.DateField()
 	AppliedCompany = models.CharField(max_length=200)
