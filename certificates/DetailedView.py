@@ -8,10 +8,8 @@ from .models import *
 
 @login_required(login_url="/certificates/login/")
 def view_detail(request, id):
-
 	ShipName = get_object_or_404(ShipMainData.objects, pk=id)
 	Cert_InterimCSSE = CertCSSE.objects.filter(ShipMainData=ShipName).order_by('-IsActive', '-DocCreated')
-
 	# InterimCSSEActive = InterimCSSE.objects.filter(ShipMainData__pk=id).filter(IsActive=True)
 	# InterimCSSEInActive = InterimCSSE.objects.filter(ShipMainData__pk=id).filter(IsActive=False)
 	# InterimCSSEInActive = ShipMainData.objects.get(interimcsse=ShipName)
@@ -23,6 +21,4 @@ def view_detail(request, id):
 		"Cert_InterimCSSE" : Cert_InterimCSSE,
 	}
 	return render(request, 'pages/view-details.html', context)
-
-
 
