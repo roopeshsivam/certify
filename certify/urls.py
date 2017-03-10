@@ -24,7 +24,7 @@ from django.views.generic.base import RedirectView
 
 urlpatterns = [
     # url(r'^login/$', auth_views.login, {'template_name': 'pages/login.html'}, name='login'),
-    url(r'^certificates/', include('certificates.urls')),
+    url(r'^in/', include('certificates.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^$', RedirectView.as_view(url='certificates/', permanent=False), name='index')
+    url(r'^$', RedirectView.as_view(url='in/', permanent=False), name='index')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

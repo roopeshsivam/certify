@@ -15,5 +15,5 @@ admin.site.register(CertCSSE)
 admin.site.register(CertCSSR)
 admin.site.register(CertDOC)
 admin.site.register(CertIAPP)
-# admin.site.register(AbstractData)
+admin.site.register(CertViewManager)
 

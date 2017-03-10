@@ -6,7 +6,13 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.auth.models import User
 
-
+class CertViewManager(models.Model):
+	FieldName = models.CharField(max_length=5, unique=True)
+	FormName = models.CharField(max_length=20, null=True)
+	ModelName = models.CharField(max_length=20, blank=True)
+	TemplateName = models.CharField(max_length=100, blank=True)
+	def __str__(self):
+		return self.FieldName
 
 class ShipFlag(models.Model):
 	FlagName = models.CharField(max_length=200)
@@ -36,6 +42,7 @@ class CertificateManage(AbstractData):
 		('b', 'Permenant'),
 	)
 	IsActive = models.BooleanField(default = True)
+	IsDraft = models.BooleanField(default=True)
 	CertType = models.CharField(max_length=1, choices=CertChoice)
 	ShipMainData = models.ForeignKey('ShipMainData', on_delete=models.PROTECT)
 	PlaceOfIssues = models.ForeignKey('PlaceOfIssue', on_delete=models.PROTECT)
@@ -44,15 +51,14 @@ class CertificateManage(AbstractData):
 	DateValidity = models.DateField()
 	class Meta:
 		abstract = True
-	def get_absolute_url(self):
-		return "/certificates/%s/%s/%s/" %(self.ShipMainData.pk, self.FieldName, self.pk)
 	def active(self):
-		if self.IsActive == True:
+		if self.IsActive:
 			active = ''
 		else:
 			active = 'disabled'
 		return active
-
+	def get_absolute_url(self):
+		return "/in/%s/%s/%s/" %(self.ShipMainData.pk, self.FieldName, self.pk)
 
 class ShipOwner(AbstractData):
 	Name = models.CharField(max_length=200)
@@ -63,6 +69,8 @@ class ShipOwner(AbstractData):
 	Email = models.CharField(max_length=200)
 	def __str__(self):
 		return str(self.IDNumber)
+	def get_absolute_url(self):
+		return "/in/owner/%s/" %(self.pk)
 
 class ShipMainData(AbstractData):
 	ShipType = (
@@ -87,19 +95,18 @@ class ShipMainData(AbstractData):
 	BuiltYear = models.PositiveIntegerField(validators=[MaxValueValidator(2099), MinValueValidator(1900)],)
 	DeliveryDate = models.PositiveIntegerField(validators=[MaxValueValidator(2099), MinValueValidator(1900)],)
 	NumberOfPerson = models.PositiveIntegerField(validators=[MaxValueValidator(999), MinValueValidator(1)],)
-	#--Foreign
 	FLAG = models.ForeignKey('ShipFlag', on_delete=models.PROTECT)
 	PortOfRegistry = models.ForeignKey('ShipPort', on_delete=models.PROTECT)
 	Owner = models.ForeignKey('ShipOwner', on_delete=models.PROTECT)
-	#--
 	def __str__(self):
 		return self.Name
 	def get_absolute_url(self):
-		return "/certificates/ships/%s/" %(self.pk)
+		return "/in/ship/%s/" %(self.pk)
 	def get_certificate(self):
 		return self._default_manager.filter(ShipMainData=self)
+	def natural_key(self):
+		return self.my_natural_key
 
-#	START---------Radio Telehphony Certificate-----------------
 class CertCSSRTC(CertificateManage):
 	FieldName = models.CharField(max_length=5, default = "cssrt")
 	Row001_Req = models.BooleanField()
@@ -112,62 +119,46 @@ class CertCSSRTC(CertificateManage):
 	Row004_Ins = models.BooleanField()
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
-#	---------Radio Telehphony Certificate----------------END
-#
-#	START---------Cargo Ship Saftey Certificate-------------
+
 class CertCSS(CertificateManage):
 	FieldName = models.CharField(max_length=5, default = "ctcss")
 	AuthorizedMiles = models.PositiveIntegerField(validators=[MaxValueValidator(999999), MinValueValidator(1)],)
-	#--
 	LifeSavings_Total = models.PositiveIntegerField(validators=[MaxValueValidator(9999), MinValueValidator(1)],)
 	LifeBoats_Number = models.PositiveIntegerField(validators=[MaxValueValidator(9999), MinValueValidator(1)],)
 	LifeBoats_Person = models.PositiveIntegerField(validators=[MaxValueValidator(9999), MinValueValidator(1)],)
-	#--
 	MotorBoatsNumber = models.PositiveIntegerField(validators=[MaxValueValidator(9999), MinValueValidator(1)],)
 	MotorBoatsPerson = models.PositiveIntegerField(validators=[MaxValueValidator(9999), MinValueValidator(1)],)
-	#--
 	LifeRaftDevice_Req = models.BooleanField()
 	LifeRaftNumber = models.PositiveIntegerField(validators=[MaxValueValidator(9999), MinValueValidator(1)],)
 	LifebuoysNumber = models.PositiveIntegerField(validators=[MaxValueValidator(9999), MinValueValidator(1)],)
 	LifejacketsNumber = models.PositiveIntegerField(validators=[MaxValueValidator(9999), MinValueValidator(1)],)
-	#--
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
-#	---------Cargo Ship Saftey Certificate---------------END
-#
-#	START---------Interim Anti-Fouling Certificate-------------
+
 class CertAFSC(CertificateManage):
 	FieldName = models.CharField(max_length=5, default = "ctafs")
 	PreviousIssued = models.DateField()
 	AppliedConstruction = models.BooleanField()
-	#--
 	RemovedBy = models.CharField(max_length=200, default = "--")
 	RemovedDate = models.DateField()
 	RemovedPreviously_Req = models.BooleanField()
-	#--
 	CoveredBy = models.CharField(max_length=200)
 	CoveredDate = models.DateField()
 	CoveredCheck_Req = models.BooleanField()
-	#--
 	Prior = models.CharField(max_length=200)
 	PriorRemovedCovered = models.CharField(max_length=200)
 	PriorCheck_Req = models.BooleanField()
-	#--
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
-#	---------Interim Anti-Fouling Certificate-------------END
-	
+
 class CertCHMC(CertificateManage):
 	FieldName = models.CharField(max_length=5, default = "ctchm")
 	BuilderName = models.CharField(max_length=200)
 	BuilderPlace = models.CharField(max_length=200)
-	#--
 
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
-#	---------Interim Hull-Machine Certificate----------------END
-#
-#	START---------Interim CSSC Certificate-----------------
+
 class CertCSSC(CertificateManage):
 	FieldName = models.CharField(max_length=5, default = "ccssc")
 	KeelLaidDate = models.DateField() #Also for CSSR
@@ -176,9 +167,7 @@ class CertCSSC(CertificateManage):
 	LastInspectionDate_002 = models.DateField()
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
-#	---------Interim CSSC Certificate----------------END
-#
-# 	START---------Interim CSSE Certificate-----------------
+
 class CertCSSE(CertificateManage):
 	FieldName = models.CharField(max_length=5, default = "ccsse")
 	def __str__(self):
@@ -188,9 +177,6 @@ class CertCSSE(CertificateManage):
 	def get_certificate(self):
 		return self._default_manager.filter(ShipMainData=self)
 
-#	---------Interim CSSE Certificate----------------END
-#
-#	START---------Interim CSSR Certificate-----------------
 class CertCSSR(CertificateManage):
 	FieldName = models.CharField(max_length=5, default = "ccssr")
 	AreaA1 = models.BooleanField()
@@ -200,37 +186,27 @@ class CertCSSR(CertificateManage):
 	AreaA5 = models.BooleanField()
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
-#	---------Interim CSSE Certificate----------------END
-#
-#	START----Interim DOC Certificate----------------END
+
 class CertDOC(CertificateManage):
 	FieldName = models.CharField(max_length=5, default = "ctdoc")
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
-#	---------Interim DOC Certificate----------------END
-#
-#	START----IAPP Certificate----------------
+
 class CertIAPP(CertificateManage):
 	FieldName = models.CharField(max_length=5, default = "ciapp")
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
-#	---------IAPP Certificate----------------END
-#
-#	START----IEE Certificate----------------
+
 class CertIEE(CertificateManage):
 	FieldName = models.CharField(max_length=5, default = "cieee")
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
-#	---------IEE Certificate----------------END
-#
-#	START----IOPP Certificate----------------
+
 class CertIOPP(CertificateManage):
 	FieldName = models.CharField(max_length=5, default = "ciopp")
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
-#	---------IOPP Certificate----------------END
-#
-#	START----ISPP Certificate----------------
+
 class CertISPP(CertificateManage):
 	FieldName = models.CharField(max_length=5, default = "cispp")
 	SewagePlant = models.CharField(max_length=200)
@@ -241,9 +217,7 @@ class CertISPP(CertificateManage):
 	TankLocation = models.CharField(max_length=200)
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
-#	---------ISPP Certificate----------------END
-#
-#	START----ISSC Certificate----------------END--------
+
 class CertISSC(CertificateManage):
 	FieldName = models.CharField(max_length=5, default = "cissc")
 	YesNo = (
@@ -320,7 +294,6 @@ class CertDG(CertificateManage):
 	FieldName = models.CharField(max_length=5, default = "crtdg")
 	Manufacturer = models.CharField(max_length=200)
 	Model = models.CharField(max_length=200)
-	#--
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
 
@@ -328,7 +301,6 @@ class CertDH(CertificateManage):
 	FieldName = models.CharField(max_length=5, default = "crtdh")
 	Manufacturer = models.CharField(max_length=200)
 	Model = models.CharField(max_length=200)
-	#--
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
 
@@ -345,10 +317,8 @@ class RecordAFSC(CertificateManage):
 	AppliedManufacturer = models.CharField(max_length=200)
 	AppliedColor = models.TextField()
 	AppliedIngredients = models.TextField()
-	#--
 	SealerCoatType = models.TextField()
 	SealerCoatColor = models.TextField()
 	SealerCoatDate = models.DateField()
-
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)

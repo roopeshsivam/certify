@@ -1,0 +1,36 @@
+{% extends 'pages/base.html' %}
+
+{% block content %}
+    <h1 >Ship List</h1>
+    <h3 class="page-header">{{ OwnerName.Name }}</h3>
+    <div class="x_content">
+        <table id="ShipTable" class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Owner Name</th>
+                    <th>ID Number</th>
+                    <th>List All Ships</th>
+                </tr>
+            </thead>          
+            <tbody>
+            {% for EachOwner in ObjectList %}
+                <tr>
+                    <td><a href="{{ EachOwner.get_absolute_url }}">{{ EachOwner.Name }}</td>
+                    <td>{{ EachOwner.IDNumber }}</td>
+                    <td><a href="../ships/?owner={{ EachOwner.pk }}">View All Ships</td>
+                </tr>
+                {% endfor %}
+            </tbody>                   
+        </table>
+    </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+<script>
+$(document).ready(function() {
+    $('#ShipTable').DataTable();
+    
+} );
+</script>
+{% endblock js %}

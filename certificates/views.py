@@ -8,13 +8,16 @@ from django.views.generic.edit import FormView
 from django.forms import BaseModelFormSet
 from django.views.generic.edit import CreateView
 from django.views.decorators.http import condition
+from django.views.generic.edit import FormMixin
+
+
 
 
 
 from .models import *
 from .forms import *
 
-# from .forms import ShipFormHead
+# from certificates.models import CertViewManager
 
 # Create your views here.
 @login_required(login_url="login/")
@@ -32,13 +35,11 @@ def add_new(request):
     #  }
     return render(request, 'pages/add-new.html')
 
-@login_required(login_url="/certificates/login/")
+@login_required(login_url="/in/login/")
 def view_all(request):
     return render(request, 'pages/view-all.html')
 
-
-
-@login_required(login_url="/certificates/login/")
+@login_required(login_url="/in/login/")
 def edit(request, id, ld):
     name_ob = InterimDOC.objects.get(pk=id)
     name_id = name_ob.Ship_InterimDOC_NewShipMainData
@@ -50,15 +51,33 @@ def edit(request, id, ld):
 @login_required
 def logout(request):
     django_logout(request)
-    return  HttpResponseRedirect('/certificates/login')
+    return  HttpResponseRedirect('/in/login')
 
-@method_decorator(login_required(login_url="/certificates/login/"), name='dispatch')
-class IndexView(generic.ListView):
+@method_decorator(login_required(login_url="/in/login/"), name='dispatch')
+class ShipIndexView(generic.ListView):
     """docstring for IndexView"""
-    template_name = 'pages/view-all.html'
-    context_object_name = 'ShipNameList'
-    def get_queryset(self):
-        return ShipMainData.objects.all()
+    template_name = 'pages/ship-view-all.html'
+    context_object_name = 'ObjectList'
+    def get_queryset(self, **kwargs):
+        owner = self.request.GET.get('owner')
+        if owner is not None:
+            return ShipMainData.objects.filter(Owner_id=owner)
+        else:
+            return ShipMainData.objects.all()
+    def get_context_data(self, **kwargs):
+        context = super(ShipIndexView, self).get_context_data(**kwargs)
+        owner = self.request.GET.get('owner')
+        if owner is not None:
+            context['OwnerName'] = ShipOwner.objects.get(id=owner)
+        return context
+
+@method_decorator(login_required(login_url="/in/login/"), name='dispatch')
+class OwnerIndexView(generic.ListView):
+    """docstring for IndexView"""
+    template_name = 'pages/owner-view-all.html'
+    context_object_name = 'ObjectList'
+    def get_queryset(self, **kwargs):
+        return ShipOwner.objects.all()
 
 class DetailView(generic.DetailView):
     """docstring for DetailView"""
@@ -66,38 +85,29 @@ class DetailView(generic.DetailView):
         super(DetailView, self).__init__()
         self.arg = arg
 
-# class CertificateView(FormView):
-#     template_name = 'pages/certificate-form.html'
-#     form_class = FormCertCSSRTC
-#     success_url = '/thanks/'
-#
-#     def form_valid(self, form):
-#         # This method is called when valid form data has been POSTed.
-#         # It should return an HttpResponse.
-#         form.send_email()
-#         return super(CertificateView, self).form_valid(form)
-
-
-# class CertificateView(CreateView):
-#     model = ShipMainData
-#     fields = '__all__'
-#     template_name = 'pages/certificate-form.html'
-#     def form_valid(self, form):
-#         form.instance.created_by = self.request.user
-#         return super(CertificateView, self).form_valid(form)
-
-
-class CertificateView(CreateView):
-    form_class = FormCertCSSC
+class CreateCertificateView(CreateView):
     template_name = 'pages/certificate-form.html'
+    def get_form_class(self, **kwargs):
+        """
+        Returns an instance of the form to be used in this view.
+        kwarg from database
+         """
+        FormObject = CertViewManager.objects.get(FieldName=self.kwargs['cert_id'])
+        return FormTable[FormObject.FormName]
 
-    def dispatch(self, *args, **kwargs):
-        return super(CertificateView, self).dispatch(*args, **kwargs)
+    def get_template_names(self, **kwargs):
+        ManagerObject = CertViewManager.objects.get(FieldName=self.kwargs['cert_id'])
+        ModelObject = ManagerObject.ModelName
+        ShipData = ShipMainData.objects.get(id=self.kwargs['ship_id'])
+        return ManagerObject.TemplateName
+
+    def get_form(self, form_class=None):
+        form = super(CreateCertificateView, self).get_form()
+        return form
 
     def form_valid(self, form, **kwargs):
-        kwargs = super(CertificateView, self).get_form_kwargs()
-        context = super(CertificateView, self).get_context_data(**kwargs)
+        kwargs = super(CreateCertificateView, self).get_form_kwargs()
         ShipData = ShipMainData.objects.get(id=self.kwargs['ship_id'])
         form.instance.DocAuthor = self.request.user
         form.instance.ShipMainData = ShipData
-        return super(CertificateView, self).form_valid(form)
+        return super(CreateCertificateView, self).form_valid(form)
