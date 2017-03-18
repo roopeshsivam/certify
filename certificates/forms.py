@@ -1,10 +1,8 @@
 from django import forms
 from certificates.models import *
 from django.forms import extras, ModelForm
-# from .models import NewShipMainData, RadioTelephonyCertificate
 
 
-## Ship Basic
 class FormShipFlag(forms.ModelForm):
     class Meta:
         model = ShipFlag
@@ -18,8 +16,6 @@ class FormPlaceOfIssue(forms.ModelForm):
         model = PlaceOfIssue
         fields = '__all__'
 
-##Ship Data
-
 class FormShipOwner(forms.ModelForm):
     class Meta:
         model = ShipOwner
@@ -29,14 +25,13 @@ class FormShipMainData(forms.ModelForm):
         model = ShipMainData
         fields = '__all__'
 
-##Ship Certificate
 class FormCertBase(forms.ModelForm):
     """
     meta Form for certificates
     """
     class Meta:
         fields = '__all__'
-        exclude = ('DocAuthor', 'IsActive', 'FieldName', 'ShipMainData', 'IsDraft',)
+        exclude = ('DocAuthor', 'IsActive', 'FieldName', 'ShipMainData', 'IsDraft', 'CertState', )
 
 class FormCertCSSRTC(FormCertBase):
     class Meta(FormCertBase.Meta):
@@ -157,8 +152,8 @@ FormTable = {
             "FormCertCSSRTC" : FormCertCSSRTC,
             "FormCertCSS" : FormCertCSS,
             "FormCertCHMC" : FormCertCHMC,
-            "FormCertCSSC" : FormCertCSSC,
-            "FormCertCSSE" : FormCertCSSE,
+            "ccssc" : FormCertCSSC,
+            "ccsse" : FormCertCSSE,
             "FormCertCSSR" : FormCertCSSR,
             "FormCertDOC" : FormCertDOC,
             "FormCertIAPP" : FormCertIAPP,

@@ -6,22 +6,28 @@
     <div class="x_content">
         <table id="ShipTable" class="table table-striped table-bordered table-hover">
             <thead>
-              <tr>
-                <th>Ship Name</th>
-                <th>IMO Number</th>
-                <th>Ship Owner</th>
-              </tr>
+                <tr>
+                    <th>Ship Name</th>
+                    <th>IMO Number</th>
+                    <th>Gross Tonnage</th>
+                    <th>Ship Owner</th>
+                </tr>
             </thead>
             <tbody>
             {% for EachShip in ObjectList %}
               <tr>
-                <td><a href="{{ EachShip.get_absolute_url }}">{{ EachShip.Name }}</a></td>
-                <td>{{ EachShip.IMONumber }}</td>
-                <td><a href="{{ EachShip.Owner.get_absolute_url }}">{{ EachShip.Owner.Name }}</a></td>
+                  <td><a href="{{ EachShip.get_absolute_url }}">{{ EachShip.Name }}</a></td>
+                  <td>{{ EachShip.IMONumber }}</td>
+                  <td>{{ EachShip.GrossTonnage }}</td>
+                  <td><a href="{{ EachShip.Owner.get_absolute_url }}">{{ EachShip.Owner.Name }}</a></td>
               </tr>
-              {% endfor %}
+            {% endfor %}
             </tbody>
         </table>
+        <form action = "/in/ccsse/1/edit/" method = "post">
+                            {% csrf_token %}
+                        <input class="btn btn-danger" type="Submit" name="deactivate" value="Deactivate"/>
+                        </form>
     </div>
     </div>
 {% endblock %}

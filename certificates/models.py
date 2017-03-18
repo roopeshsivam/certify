@@ -10,7 +10,11 @@ class CertViewManager(models.Model):
 	FieldName = models.CharField(max_length=5, unique=True)
 	FormName = models.CharField(max_length=20, null=True)
 	ModelName = models.CharField(max_length=20, blank=True)
-	TemplateName = models.CharField(max_length=100, blank=True)
+	CreateTemplateName = models.CharField(max_length=100, blank=True)
+	UpdateTemplateName = models.CharField(max_length=100, blank=True)
+	DetailTemplateName = models.CharField(max_length=100, blank=True)
+	Title = models.CharField(max_length=100, blank=True)
+	Description = models.TextField(max_length=100, blank=True)
 	def __str__(self):
 		return self.FieldName
 
@@ -41,9 +45,13 @@ class CertificateManage(AbstractData):
 		('a', 'Interim'),
 		('b', 'Permenant'),
 	)
-	IsActive = models.BooleanField(default = True)
-	IsDraft = models.BooleanField(default=True)
+	StateChoice = (
+		('a', 'Draft'),
+		('b', 'Confirmed'),
+		('c', 'DeActivated')
+	)
 	CertType = models.CharField(max_length=1, choices=CertChoice)
+	CertState = models.CharField(max_length=1, choices=StateChoice)
 	ShipMainData = models.ForeignKey('ShipMainData', on_delete=models.PROTECT)
 	PlaceOfIssues = models.ForeignKey('PlaceOfIssue', on_delete=models.PROTECT)
 	DateCompletion = models.DateField()
@@ -58,7 +66,7 @@ class CertificateManage(AbstractData):
 			active = 'disabled'
 		return active
 	def get_absolute_url(self):
-		return "/in/%s/%s/%s/" %(self.ShipMainData.pk, self.FieldName, self.pk)
+		return "/in/%s/%s/" %(self.FieldName, self.pk)
 
 class ShipOwner(AbstractData):
 	Name = models.CharField(max_length=200)
@@ -70,7 +78,7 @@ class ShipOwner(AbstractData):
 	def __str__(self):
 		return str(self.IDNumber)
 	def get_absolute_url(self):
-		return "/in/owner/%s/" %(self.pk)
+		return "/in/own/%s/" %(self.pk)
 
 class ShipMainData(AbstractData):
 	ShipType = (
@@ -322,3 +330,28 @@ class RecordAFSC(CertificateManage):
 	SealerCoatDate = models.DateField()
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
+
+ModelTable = {
+            "CertCSSRTC" : CertCSSRTC,
+            "CertCSS" : CertCSS,
+            "CertCHMC" : CertCHMC,
+            "ccssc" : CertCSSC,
+            "ccsse" : CertCSSE,
+            "CertCSSR" : CertCSSR,
+            "CertDOC" : CertDOC,
+            "CertIAPP" : CertIAPP,
+            "CertIEE" : CertIEE,
+            "CertIOPP" : CertIOPP,
+            "CertISPP" : CertISPP,
+            "CertISSC" : CertISSC,
+            "CertLL" : CertLL,
+            "CertIMLC" : CertIMLC,
+            "CertSMC" : CertSMC,
+            "CertSOPEP" : CertSOPEP,
+            "CertSSP" : CertSSP,
+            "CertSBA" : CertSBA,
+            "CertDG" : CertDG,
+            "CertDH" : CertDH,
+            "CertFC" : CertFC,
+            "RecordAFSC" : RecordAFSC,
+        }
