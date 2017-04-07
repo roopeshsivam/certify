@@ -3,7 +3,12 @@ from django.contrib.auth import logout as django_logout
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views import generic
+from django.views.generic.detail import DetailView
+from django.utils.decorators import method_decorator
+
+
 from .models import *
+from .ContextData import *
 from django.views.generic import DetailView
 
 
@@ -11,30 +16,59 @@ from django.views.generic import DetailView
 @login_required(login_url="/certificates/login/")
 def view_detail(request, id):
 	ShipName = get_object_or_404(ShipMainData.objects, pk=id)
-	Cert_InterimCSSE = CertCSSE.objects.filter(ShipMainData=ShipName).order_by('-CertState', '-DocCreated')
-	# InterimCSSEActive = InterimCSSE.objects.filter(ShipMainData__pk=id).filter(IsActive=True)
-	# InterimCSSEInActive = InterimCSSE.objects.filter(ShipMainData__pk=id).filter(IsActive=False)
-	# InterimCSSEInActive = ShipMainData.objects.get(interimcsse=ShipName)
-	# apple = IntrimCSSE.get_url
-	# apple= InterimCSSE.get_url(id,id)
-	# print (apple)
+	Cert_InterimCSSE = CertCSSRTC.objects.filter(ShipMainData=ShipName).order_by('-CertState', '-DocCreated')
 	context = {
 		"ShipName": ShipName,
 		"Cert_InterimCSSE" : Cert_InterimCSSE,
 	}
 	return render(request, 'pages/view-details.html', context)
 
-class CertDetailView(DetailView):
 
-	model = CertCSSE
 
+
+@method_decorator(login_required(login_url="/in/login/"), name='dispatch')
+class ShipDetailView(DetailView):
+	model = ShipMainData
 	def get_context_data(self, **kwargs):
-		context = super(CertDetailView, self).get_context_data(**kwargs)
+		ShipName = ShipMainData.objects.get(pk=self.kwargs['pk'])
+		context = super(ShipDetailView, self).get_context_data(**kwargs)
 		context['now'] = timezone.now()
+		context['ShipName'] = ShipName
+		context['CertCSSRTC'] = CertCSSRTC.objects.filter(ShipMainData=ShipName).order_by('-CertState', '-DocCreated')
 		return context
 
 	def get_template_names(self):
-		ManagerObject = CertViewManager.objects.get(FieldName=self.kwargs['cert_id'])
-		ModelObject = ModelTable[ManagerObject.FieldName]
-		ModelObject = ModelObject.objects.get(pk=self.kwargs['pk'])
-		return ManagerObject.DetailTemplateName
+		return 'pages/ship-view-details.html'
+
+@method_decorator(login_required(login_url="/in/login/"), name='dispatch')
+class OwnerDetailView(DetailView):
+	model = ShipOwner
+	def get_context_data(self, **kwargs):
+		OwnerName = ShipOwner.objects.get(pk=self.kwargs['pk'])
+		context = super(OwnerDetailView, self).get_context_data(**kwargs)
+		context['now'] = timezone.now()
+		context['OwnerName'] = OwnerName
+		return context
+
+	def get_template_names(self):
+		return 'pages/owner-view-details.html'
+
+
+class CertDetailView(DetailView):
+	def get_context_data(self, **kwargs):
+		CertData = ModelTable[self.kwargs['cert_id']]
+		Certificate = CertData.objects.get(pk=self.kwargs['pk'])
+		context = super(CertDetailView, self).get_context_data(**kwargs)
+		context['now'] = timezone.now()
+		context['Certificate'] = Certificate
+		context['CertState'] = CertState[Certificate.CertState]
+		context['CertType'] = CertType[Certificate.CertType]
+		context['CertName'] = CertName[self.kwargs['cert_id']]
+		return context
+
+	def get_object(self, queryset=None):
+		return
+
+	def get_template_names(self):
+		# return 'pages/view-'+TemplateTable[self.kwargs['cert_id']]
+		return 'pages/view-certificate-details.html'

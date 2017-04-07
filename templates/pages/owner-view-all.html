@@ -1,5 +1,4 @@
 {% extends 'pages/base.html' %}
-
 {% block content %}
     <h1 >Ship Owners List</h1>
     <h3 class="page-header">{{ OwnerName.Name }}</h3>
@@ -25,12 +24,10 @@
     </div>
     </div>
 {% endblock %}
-
 {% block js %}
 <script>
 $(document).ready(function() {
     $('#ShipTable').DataTable();
-    
 } );
 </script>
 {% endblock js %}

@@ -17,13 +17,17 @@ from django.views.generic.edit import UpdateView
 
 from .models import *
 from .forms import *
+from .ContextData import *
 
 # from certificates.models import CertViewManager
 
 # Create your views here.
+
+
 @login_required(login_url="login/")
 def index(request):
     return render(request, 'pages/index.html')
+
 
 @login_required(login_url="/certificates/login/")
 def add_new(request):
@@ -36,9 +40,11 @@ def add_new(request):
     #  }
     return render(request, 'pages/add-new.html')
 
+
 @login_required(login_url="/in/login/")
 def view_all(request):
     return render(request, 'pages/view-all.html')
+
 
 @login_required(login_url="/in/login/")
 def edit(request, id, ld):
@@ -49,22 +55,26 @@ def edit(request, id, ld):
     }
     return render(request, 'pages/edit.html', context)
 
+
 @login_required
 def logout(request):
     django_logout(request)
     return  HttpResponseRedirect('/in/login')
+
 
 @method_decorator(login_required(login_url="/in/login/"), name='dispatch')
 class ShipIndexView(generic.ListView):
     """docstring for IndexView"""
     template_name = 'pages/ship-view-all.html'
     context_object_name = 'ObjectList'
+
     def get_queryset(self, **kwargs):
         owner = self.request.GET.get('owner')
         if owner is not None:
             return ShipMainData.objects.filter(Owner_id=owner)
         else:
             return ShipMainData.objects.all()
+
     def get_context_data(self, **kwargs):
         context = super(ShipIndexView, self).get_context_data(**kwargs)
         owner = self.request.GET.get('owner')
@@ -73,11 +83,13 @@ class ShipIndexView(generic.ListView):
             context['UserName'] = self.request.user.get_full_name()
         return context
 
+
 @method_decorator(login_required(login_url="/in/login/"), name='dispatch')
 class OwnerIndexView(generic.ListView):
     """docstring for IndexView"""
     template_name = 'pages/owner-view-all.html'
     context_object_name = 'ObjectList'
+
     def get_queryset(self, **kwargs):
         return ShipOwner.objects.all()
 
@@ -87,21 +99,23 @@ class DetailView(generic.DetailView):
         super(DetailView, self).__init__()
         self.arg = arg
 
+
+@method_decorator(login_required(login_url="/in/login/"), name='dispatch')
 class CreateCertificateView(CreateView):
-    template_name = 'pages/certificate-form.html'
+
+
     def get_form_class(self, **kwargs):
         """
         Returns an instance of the form to be used in this view.
         kwarg from database
          """
-        FormObject = CertViewManager.objects.get(FieldName=self.kwargs['cert_id'])
-        return FormTable[FormObject.FieldName]
+        return FormTable[self.kwargs['cert_id']]
 
     def get_template_names(self, **kwargs):
-        ManagerObject = CertViewManager.objects.get(FieldName=self.kwargs['cert_id'])
-        ModelObject = ModelTable[ManagerObject.FieldName]
-        if str(ModelObject.objects.filter(CertState='b', ShipMainData__pk=self.kwargs['ship_id'])) == '<QuerySet []>':
-            return ManagerObject.CreateTemplateName
+        ShipID = self.request.GET.get('shipid')
+        ModelObject = ModelTable[self.kwargs['cert_id']]
+        if str(ModelObject.objects.filter(CertState='c', ShipMainData__pk=ShipID)) == '<QuerySet []>':
+            return 'pages/create-'+TemplateTable[self.kwargs['cert_id']]
         else:
             return 'pages/form-error.html'
 
@@ -110,24 +124,27 @@ class CreateCertificateView(CreateView):
         return form
 
     def form_valid(self, form, **kwargs):
-        kwargs = super(CreateCertificateView, self).get_form_kwargs()
-        ShipData = ShipMainData.objects.get(id=self.kwargs['ship_id'])
+        ShipID = self.request.GET.get('shipid')
         form.instance.DocAuthor = self.request.user
-        form.instance.ShipMainData = ShipData
-        form.instance.CertState = 'a'
+        form.instance.ShipMainData = ShipMainData.objects.get(id=ShipID)
+        form.instance.CertState = 'd'
         return super(CreateCertificateView, self).form_valid(form)
+
 
 @method_decorator(login_required(login_url="/in/login/"), name='dispatch')
 class OwnerIndexView(generic.ListView):
     """docstring for IndexView"""
     template_name = 'pages/owner-view-all.html'
     context_object_name = 'ObjectList'
+
     def get_queryset(self, **kwargs):
         return ShipOwner.objects.all()
+
 
 @method_decorator(login_required(login_url="/in/login/"), name='dispatch')
 class UpdateCertificateView(UpdateView):
     queryset = None
+
     def get_form_class(self, **kwargs):
         """
         Returns the form class to use in this view
@@ -153,7 +170,7 @@ class UpdateCertificateView(UpdateView):
         ManagerObject = CertViewManager.objects.get(FieldName=self.kwargs['cert_id'])
         ModelObject = ModelTable[ManagerObject.FieldName]
         ModelObject = ModelObject.objects.get(pk=self.kwargs['pk'])
-        if ModelObject.CertState=='a':
+        if ModelObject.CertState=='d':
             return ManagerObject.UpdateTemplateName
         else:
             return 'pages/form-error-update.html'
@@ -161,11 +178,11 @@ class UpdateCertificateView(UpdateView):
     def form_valid(self, form):
         print(self.request.POST)
         if 'save' in self.request.POST:
-            form.instance.CertState = 'a'
+            form.instance.CertState = 'd'
         elif 'confirm' in self.request.POST:
-            form.instance.CertState = 'b'
-        elif 'deactivate' in self.request.POST:
             form.instance.CertState = 'c'
+        elif 'deactivate' in self.request.POST:
+            form.instance.CertState = 'x'
         return super(UpdateCertificateView, self).form_valid(form)
 
     def post(self, request, **kwargs):
@@ -174,7 +191,7 @@ class UpdateCertificateView(UpdateView):
         ModelObject = ModelTable[ManagerObject.FieldName]
         print(request.POST)
         if 'confirm' in request.POST:
-            ModelObject.objects.filter(pk=self.kwargs['pk']).update(CertState='b')
-        if 'deactivate' in request.POST:
             ModelObject.objects.filter(pk=self.kwargs['pk']).update(CertState='c')
+        if 'deactivate' in request.POST:
+            ModelObject.objects.filter(pk=self.kwargs['pk']).update(CertState='x')
             return HttpResponseRedirect('/in/own/') #change to redirect

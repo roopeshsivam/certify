@@ -1,0 +1,67 @@
+{% extends 'pages/base.html' %}
+{% block content %}
+
+        <!-- Page Content -->
+        <div id="page-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3 class = "pull-right">Ship Owner Details</h3>
+                        <h2 class="page-header">{{OwnerName.Name}}</h2>
+                    <div class="panel panel-green">
+                        <div class="panel-heading">
+                        </div>
+                        <div class="panel-body">
+                            <div class = row>
+                                <div class="col-lg-12">
+                                    <!-- <ul class="list-group">
+                                      <li class="list-group-item active">Flag</li>
+                                      <li class="list-group-item ">{{ShipName.FLAG.FlagName}}</li>
+                                      <li class="list-group-item active">Port Of Registry</li>
+                                      <li class="list-group-item">{{ShipName.PortOfRegistry.PortName}}</li>
+                                      <li class="list-group-item active">DNL</li>
+                                      <li class="list-group-item">{{ShipName.DNL}}</li>
+                                    </ul> -->
+                                    <dl class="dl-horizontal">
+                                        <dt>ID Number</dt>
+                                        <dd>{{OwnerName.IDNumber}}</dd>
+                                        <dt>Company Name</dt>
+                                        <dd>{{OwnerName.CompanyName}}</dd>
+                                        <dt>Company Address</dt>
+                                        <dd>{{OwnerName.CompanyAddress}}</dd>
+                                        <dt>Phone</dt>
+                                        <dd>{{OwnerName.Phone}}</dd>
+                                        <dt>Email</dt>
+                                        <dd>{{OwnerName.Email}}</dd>
+                                    </dl>
+                                    <a href="../../ships/?owner={{OwnerName.pk}}" class="btn btn-outline btn-warning page-header">View All Ships</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <div class = "row">
+                                <div class="col-lg-6">
+                                    <dl class="dl-horizontal">
+                                        <dt>Created By</dt>
+                                        <dd>{{OwnerName.DocAuthor}}</dd>
+                                        <dt>Created On</dt>
+                                        <dd>{{OwnerName.DocCreated}}</dd>
+                                        <dt>Last Updated On</dt>
+                                        <dd>{{OwnerName.DocLastUpdated}}</dd>
+                                    </dl>
+                                </div>
+                                <div class="col-lg-6">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container-fluid -->
+        </div>
+        <!-- /#page-wrapper -->
+  {% endblock %}
+   

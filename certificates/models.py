@@ -43,12 +43,12 @@ class AbstractData(models.Model):
 class CertificateManage(AbstractData):
 	CertChoice = (
 		('a', 'Interim'),
-		('b', 'Permenant'),
+		('b', 'Full Term'),
 	)
 	StateChoice = (
-		('a', 'Draft'),
-		('b', 'Confirmed'),
-		('c', 'DeActivated')
+		('d', 'Draft'),
+		('c', 'Confirmed'),
+		('x', 'DeActivated')
 	)
 	CertType = models.CharField(max_length=1, choices=CertChoice)
 	CertState = models.CharField(max_length=1, choices=StateChoice)
@@ -66,7 +66,7 @@ class CertificateManage(AbstractData):
 			active = 'disabled'
 		return active
 	def get_absolute_url(self):
-		return "/in/%s/%s/" %(self.FieldName, self.pk)
+		return "../%s/" %(self.pk)
 
 class ShipOwner(AbstractData):
 	Name = models.CharField(max_length=200)
@@ -106,6 +106,8 @@ class ShipMainData(AbstractData):
 	FLAG = models.ForeignKey('ShipFlag', on_delete=models.PROTECT)
 	PortOfRegistry = models.ForeignKey('ShipPort', on_delete=models.PROTECT)
 	Owner = models.ForeignKey('ShipOwner', on_delete=models.PROTECT)
+	BuilderName = models.CharField(max_length=200)
+	BuilderPlace = models.CharField(max_length=200)
 	def __str__(self):
 		return self.Name
 	def get_absolute_url(self):
@@ -331,27 +333,3 @@ class RecordAFSC(CertificateManage):
 	def __str__(self):
 		return str(self.ShipMainData.IMONumber)
 
-ModelTable = {
-            "CertCSSRTC" : CertCSSRTC,
-            "CertCSS" : CertCSS,
-            "CertCHMC" : CertCHMC,
-            "ccssc" : CertCSSC,
-            "ccsse" : CertCSSE,
-            "CertCSSR" : CertCSSR,
-            "CertDOC" : CertDOC,
-            "CertIAPP" : CertIAPP,
-            "CertIEE" : CertIEE,
-            "CertIOPP" : CertIOPP,
-            "CertISPP" : CertISPP,
-            "CertISSC" : CertISSC,
-            "CertLL" : CertLL,
-            "CertIMLC" : CertIMLC,
-            "CertSMC" : CertSMC,
-            "CertSOPEP" : CertSOPEP,
-            "CertSSP" : CertSSP,
-            "CertSBA" : CertSBA,
-            "CertDG" : CertDG,
-            "CertDH" : CertDH,
-            "CertFC" : CertFC,
-            "RecordAFSC" : RecordAFSC,
-        }

@@ -148,27 +148,3 @@ class FormRecordAFSC(FormCertBase):
         model = RecordAFSC
         fields = '__all__'
 
-FormTable = {
-            "FormCertCSSRTC" : FormCertCSSRTC,
-            "FormCertCSS" : FormCertCSS,
-            "FormCertCHMC" : FormCertCHMC,
-            "ccssc" : FormCertCSSC,
-            "ccsse" : FormCertCSSE,
-            "FormCertCSSR" : FormCertCSSR,
-            "FormCertDOC" : FormCertDOC,
-            "FormCertIAPP" : FormCertIAPP,
-            "FormCertIEE" : FormCertIEE,
-            "FormCertIOPP" : FormCertIOPP,
-            "FormCertISPP" : FormCertISPP,
-            "FormCertISSC" : FormCertISSC,
-            "FormCertLL" : FormCertLL,
-            "FormCertIMLC" : FormCertIMLC,
-            "FormCertSMC" : FormCertSMC,
-            "FormCertSOPEP" : FormCertSOPEP,
-            "FormCertSSP" : FormCertSSP,
-            "FormCertSBA" : FormCertSBA,
-            "FormCertDG" : FormCertDG,
-            "FormCertDH" : FormCertDH,
-            "FormCertFC" : FormCertFC,
-            "FormRecordAFSC" : FormRecordAFSC,
-        }
