@@ -6,6 +6,7 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <h3 class="page-header">CERTFICATE DETAILS</h3>
+                        <div class="x_panel">
                         <h2>{{CertName}}</h2>
                         <dl class="dl-horizontal">
                             <dt>Ship Name</dt>
@@ -18,11 +19,59 @@
                             <dd>{{Certificate.DateValidity}}</dd>
                             <dt>Date of Completion</dt>
                             <dd>{{Certificate.DateCompletion}}</dd>
+                            <dt>Last Updated</dt>
+                            <dd>{{Certificate.DocLastUpdated}} by {{Certificate.DocAuthor}}</dd>
                             <dt>Certificate Status</dt>
                             <dd>{{CertState}}</dd>
+                            {% if CertStop == "stop"%}
+                            {% if Certificate.CertState == "d"%}
+                            <div class="alert alert-danger alert-dismissible fade in" role="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span>
+                                </button>
+                                <strong>Warning!</strong> Although this is a draft certificate, this can't be confirmed. There is a valid(confirmed) certificate attached to this ship.
+                                Please cancel the confirmed certificate to activate this.
+                            </div>
+                            {% endif %}
+                            {% endif %}
+                            <h4>
+                                Please click here to see all certificates<a href="../?shipid={{Certificate.ShipMainData.pk}}"> Click Here</a>
+                            </h4>
 
                         </dl>
+                        <div class="row">
+                            <div class="ln_solid"></div>
+                            <div class="col-md-2">
+                                {% if Certificate.CertState == "d"%}
+                                <a class="btn btn-primary btn-block" href="/in/cert/{{Cert}}/{{Certificate.pk}}/edit/">Edit</a>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-2">
+                                {% if CertStop != "stop"%}
+                                {% if Certificate.CertState == "d"%}
+                                <form action = "/in/cert/{{Cert}}/{{Certificate.pk}}/edit/" method = "post">
+                                    {% csrf_token %}
+                                    <input class="btn btn-success btn-block" type="Submit" name="confirm" value="Confirm"/>
+                                </form>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                            <div class="col-md-2">
+                                {% if Certificate.CertState != "x"%}
+                                <a class="btn btn-warning btn-block" href="/in/print/{{Cert}}/{{Certificate.pk}}/">Print</a>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-2">
 
+                                {% if Certificate.CertState != "x"%}
+                                <form action = "/in/cert/{{Cert}}/{{Certificate.pk}}/edit/" method = "post">
+                                    {% csrf_token %}
+                                    <input class="btn btn-danger btn-block" type="Submit" name="deactivate" value="Deactivate"/>
+                                </form>
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    </div>
                     </div>
                     <!-- /.col-lg-12 -->
                 </div>

@@ -100,35 +100,36 @@ class DetailView(generic.DetailView):
         self.arg = arg
 
 
-@method_decorator(login_required(login_url="/in/login/"), name='dispatch')
-class CreateCertificateView(CreateView):
-
-
-    def get_form_class(self, **kwargs):
-        """
-        Returns an instance of the form to be used in this view.
-        kwarg from database
-         """
-        return FormTable[self.kwargs['cert_id']]
-
-    def get_template_names(self, **kwargs):
-        ShipID = self.request.GET.get('shipid')
-        ModelObject = ModelTable[self.kwargs['cert_id']]
-        if str(ModelObject.objects.filter(CertState='c', ShipMainData__pk=ShipID)) == '<QuerySet []>':
-            return 'pages/create-'+TemplateTable[self.kwargs['cert_id']]
-        else:
-            return 'pages/form-error.html'
-
-    def get_form(self, form_class=None):
-        form = super(CreateCertificateView, self).get_form()
-        return form
-
-    def form_valid(self, form, **kwargs):
-        ShipID = self.request.GET.get('shipid')
-        form.instance.DocAuthor = self.request.user
-        form.instance.ShipMainData = ShipMainData.objects.get(id=ShipID)
-        form.instance.CertState = 'd'
-        return super(CreateCertificateView, self).form_valid(form)
+# @method_decorator(login_required(login_url="/in/login/"), name='dispatch')
+# class CreateCertificateView(CreateView):
+#
+#
+#     def get_form_class(self, **kwargs):
+#         """
+#         Returns an instance of the form to be used in this view.
+#         kwarg from database
+#          """
+#         return ContextData[self.kwargs['cert_id']]['FormName']
+#
+#     def get_template_names(self, **kwargs):
+#         ShipID = self.request.GET.get('shipid')
+#         ModelObject = ContextData[self.kwargs['cert_id']]['ModelName']
+#         # if str(ModelObject.objects.filter(CertState='c', ShipMainData__pk=ShipID)) == '<QuerySet []>':
+#         #     return 'pages/create-'+ContextData[self.kwargs['cert_id']]['TemplateName']
+#         # else:
+#         #     return 'pages/active-certificate-error.html'
+#         return 'forms/create/create-' + ContextData[self.kwargs['cert_id']]['TemplateName']
+#
+#     def get_form(self, form_class=None):
+#         form = super(CreateCertificateView, self).get_form()
+#         return form
+#
+#     def form_valid(self, form, **kwargs):
+#         ShipID = self.request.GET.get('shipid')
+#         form.instance.DocAuthor = self.request.user
+#         form.instance.ShipMainData = ShipMainData.objects.get(id=ShipID)
+#         form.instance.CertState = 'd'
+#         return super(CreateCertificateView, self).form_valid(form)
 
 
 @method_decorator(login_required(login_url="/in/login/"), name='dispatch')
@@ -141,57 +142,63 @@ class OwnerIndexView(generic.ListView):
         return ShipOwner.objects.all()
 
 
-@method_decorator(login_required(login_url="/in/login/"), name='dispatch')
-class UpdateCertificateView(UpdateView):
-    queryset = None
-
-    def get_form_class(self, **kwargs):
-        """
-        Returns the form class to use in this view
-        """
-        ManagerObject = CertViewManager.objects.get(FieldName=self.kwargs['cert_id'])
-        return FormTable[ManagerObject.FieldName]
-
-    def get_queryset(self, **kwargs):
-        """
-        Return the `QuerySet` that will be used to look up the object.
-        Note that this method is called by the default implementation of
-        `get_object` and may not be called if `get_object` is overridden.
-        """
-        ManagerObject = CertViewManager.objects.get(FieldName=self.kwargs['cert_id'])
-        ModelObject = ModelTable[ManagerObject.FieldName]
-        return ModelObject.objects.all()
-
-    def get_template_names(self, **kwargs):
-        """
-        Returns a list of template names to be used for the request. Must return
-        a list. May not be called if render_to_response is overridden.
-        """
-        ManagerObject = CertViewManager.objects.get(FieldName=self.kwargs['cert_id'])
-        ModelObject = ModelTable[ManagerObject.FieldName]
-        ModelObject = ModelObject.objects.get(pk=self.kwargs['pk'])
-        if ModelObject.CertState=='d':
-            return ManagerObject.UpdateTemplateName
-        else:
-            return 'pages/form-error-update.html'
-
-    def form_valid(self, form):
-        print(self.request.POST)
-        if 'save' in self.request.POST:
-            form.instance.CertState = 'd'
-        elif 'confirm' in self.request.POST:
-            form.instance.CertState = 'c'
-        elif 'deactivate' in self.request.POST:
-            form.instance.CertState = 'x'
-        return super(UpdateCertificateView, self).form_valid(form)
-
-    def post(self, request, **kwargs):
-        request.POST = (request.POST.copy())
-        ManagerObject = CertViewManager.objects.get(FieldName=self.kwargs['cert_id'])
-        ModelObject = ModelTable[ManagerObject.FieldName]
-        print(request.POST)
-        if 'confirm' in request.POST:
-            ModelObject.objects.filter(pk=self.kwargs['pk']).update(CertState='c')
-        if 'deactivate' in request.POST:
-            ModelObject.objects.filter(pk=self.kwargs['pk']).update(CertState='x')
-            return HttpResponseRedirect('/in/own/') #change to redirect
+# @method_decorator(login_required(login_url="/in/login/"), name='dispatch')
+# class UpdateCertificateView(UpdateView):
+#     queryset = None
+#
+#     def get_form_class(self, **kwargs):
+#         """
+#         Returns the form class to use in this view
+#         """
+#         return ContextData[self.kwargs['cert_id']]['FormName']
+#
+#     def get_queryset(self, **kwargs):
+#         """
+#         Return the `QuerySet` that will be used to look up the object.
+#         Note that this method is called by the default implementation of
+#         `get_object` and may not be called if `get_object` is overridden.
+#         """
+#         ModelObject = ContextData[self.kwargs['cert_id']]['ModelName']
+#         return ModelObject.objects.all()
+#
+#     def get_template_names(self, **kwargs):
+#         """
+#         Returns a list of template names to be used for the request. Must return
+#         a list. May not be called if render_to_response is overridden.
+#         """
+#         ModelObject = ContextData[self.kwargs['cert_id']]['ModelName']
+#         ModelObject = ModelObject.objects.get(pk=self.kwargs['pk'])
+#         if ModelObject.CertState=='d':
+#             return 'pages/update-'+ContextData[self.kwargs['cert_id']]['TemplateName']
+#         else:
+#             return 'pages/form-error-update.html'
+#
+#     def form_valid(self, form):
+#         form = self.get_form()
+#         form.save()
+#         return super(UpdateCertificateView, self).form_valid(form)
+#
+#     def get_success_url(self):
+#         return "../"
+#
+#     def post(self, request, *args, **kwargs):
+#         request.POST = (request.POST.copy())
+#         ModelObject = ContextData[self.kwargs['cert_id']]['ModelName']
+#         Certificate = ModelObject.objects.get(pk=self.kwargs['pk'])
+#         CertFilter = ModelObject.objects.filter(ShipMainData_id=Certificate.ShipMainData.id)
+#         State='c'
+#         for Certificates in CertFilter: #Check simultaneous confirmation of multiple certificates
+#             if Certificates.CertState == "c":
+#                 State = 'd'
+#         if 'save' in request.POST: #Check before editing or saving confirmed certificates
+#             form = self.get_form()
+#             if Certificate.CertState != "c":
+#                 return super(UpdateCertificateView, self).post(request, *args, **kwargs)
+#             else:
+#                 return HttpResponseRedirect('../')  # change to redirect
+#         if 'confirm' in request.POST:
+#             ModelObject.objects.filter(pk=self.kwargs['pk']).update(CertState=State)
+#             return HttpResponseRedirect('../')  # change to redirect
+#         if 'deactivate' in request.POST:
+#             ModelObject.objects.filter(pk=self.kwargs['pk']).update(CertState='x')
+#             return HttpResponseRedirect('../') #change to redirect

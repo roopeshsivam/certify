@@ -33,118 +33,67 @@ class FormCertBase(forms.ModelForm):
         fields = '__all__'
         exclude = ('DocAuthor', 'IsActive', 'FieldName', 'ShipMainData', 'IsDraft', 'CertState', )
 
-class FormCertCSSRTC(FormCertBase):
+class FormCAFSC(FormCertBase):
     class Meta(FormCertBase.Meta):
-        model = CertCSSRTC
+        model = TableCAFSC
         fields = '__all__'
 
-class FormCertCSS(FormCertBase):
+class FormCCHMC(FormCertBase):
     class Meta(FormCertBase.Meta):
-        model = CertCSS
+        model = TableCCHMC
         fields = '__all__'
 
-class FormCertAFSC(FormCertBase):
+class FormCCSSC(FormCertBase):
     class Meta(FormCertBase.Meta):
-        model = CertAFSC
+        model = TableCCSSC
         fields = '__all__'
 
-class FormCertCHMC(FormCertBase):
+class FormCCSSE(FormCertBase):
     class Meta(FormCertBase.Meta):
-        model = CertCHMC
+        model = TableCCSSE
         fields = '__all__'
 
-class FormCertCSSC(FormCertBase):
+class FormCCSSR(FormCertBase):
     class Meta(FormCertBase.Meta):
-        model = CertCSSC
+        model = TableCCSSR
         fields = '__all__'
 
-class FormCertCSSE(FormCertBase):
+class FormCCDOC(FormCertBase):
     class Meta(FormCertBase.Meta):
-        model = CertCSSE
+        model = TableCCDOC
         fields = '__all__'
 
-class FormCertCSSR(FormCertBase):
+class FormCIAPP(FormCertBase):
     class Meta(FormCertBase.Meta):
-        model = CertCSSR
+        model = TableCIAPP
         fields = '__all__'
 
-class FormCertDOC(FormCertBase):
+class FormCCIEE(FormCertBase):
     class Meta(FormCertBase.Meta):
-        model = CertDOC
+        model = TableCCIEE
         fields = '__all__'
 
-class FormCertIAPP(FormCertBase):
+class FormCCLLC(FormCertBase):
     class Meta(FormCertBase.Meta):
-        model = CertIAPP
+        model = TableCCLLC
         fields = '__all__'
 
-class FormCertIEE(FormCertBase):
+class FormCIOPP(FormCertBase):
     class Meta(FormCertBase.Meta):
-        model = CertIEE
+        model = TableCIOPP
         fields = '__all__'
 
-class FormCertIOPP(FormCertBase):
+class FormCISPP(FormCertBase):
     class Meta(FormCertBase.Meta):
-        model = CertIOPP
+        model = TableCISPP
         fields = '__all__'
 
-class FormCertISPP(FormCertBase):
+class FormCISSC(FormCertBase):
     class Meta(FormCertBase.Meta):
-        model = CertISPP
+        model = TableCISSC
         fields = '__all__'
 
-class FormCertISSC(FormCertBase):
+class FormCCSMC(FormCertBase):
     class Meta(FormCertBase.Meta):
-        model = CertISSC
+        model = TableCCSMC
         fields = '__all__'
-
-class FormCertLL(FormCertBase):
-    class Meta(FormCertBase.Meta):
-        model = CertLL
-        fields = '__all__'
-
-class FormCertIMLC(FormCertBase):
-    class Meta(FormCertBase.Meta):
-        model = CertIMLC
-        fields = '__all__'
-
-class FormCertSMC(FormCertBase):
-    class Meta(FormCertBase.Meta):
-        model = CertSMC
-        fields = '__all__'
-
-class FormCertSOPEP(FormCertBase):
-    class Meta(FormCertBase.Meta):
-        model = CertSOPEP
-        fields = '__all__'
-
-class FormCertSSP(FormCertBase):
-    class Meta(FormCertBase.Meta):
-        model = CertSSP
-        fields = '__all__'
-
-class FormCertSBA(FormCertBase):
-    class Meta(FormCertBase.Meta):
-        model = CertSBA
-        fields = '__all__'
-
-class FormCertDG(FormCertBase):
-    class Meta(FormCertBase.Meta):
-        model = CertDG
-        fields = '__all__'
-
-class FormCertDH(FormCertBase):
-    class Meta(FormCertBase.Meta):
-        model = CertDH
-        fields = '__all__'
-
-class FormCertFC(FormCertBase):
-    class Meta(FormCertBase.Meta):
-        model = CertFC
-        fields = '__all__'
-
-class FormRecordAFSC(FormCertBase):
-    class Meta(FormCertBase.Meta):
-        model = RecordAFSC
-        fields = '__all__'
-

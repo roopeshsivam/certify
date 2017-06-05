@@ -1,0 +1,10 @@
+<form method="POST" action="">
+{% csrf_token %}
+{{ form.as_ul }}
+	<div class="row">
+	<div class="ln_solid"></div>
+		<div class="col-lg-2">
+			<input class="btn btn-primary btn-block" type="submit" name="save" value="{{ButtonState}}"/>
+		</div>
+	</div>
+</form>
